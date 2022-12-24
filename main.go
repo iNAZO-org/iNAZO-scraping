@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"math"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/sclevine/agouti"
 )
 
@@ -64,7 +66,7 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 }
 
 func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, error) {
-	var res []GradeDistributionItem = make([]GradeDistributionItem, 5)
+	var res []GradeDistributionItem = make([]GradeDistributionItem, 0)
 	page := ctx.page
 
 	trs := page.AllByXPath(`//*[@id="gvResult"]/tbody/tr`)
@@ -72,6 +74,8 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 	if err != nil {
 		return nil, err
 	}
+	validTrsCount := (n - 2) / 2
+	bar := pb.StartNew(validTrsCount)
 
 	// 初めの2個, 偶数番目のtrは成績データと無関係なので無視する
 	for i := 2; i < n; i += 2 {
@@ -107,6 +111,7 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 		for j := lowerBound; j <= upperBound; j++ {
 			text, err := tds.At(j).Text()
 			if err != nil {
+				bar.Finish()
 				return nil, err
 			}
 			rowItem = append(rowItem, text)
@@ -115,59 +120,73 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 		if rowItem[1] == statisticsRowWords[0] ||
 			rowItem[1] == statisticsRowWords[1] ||
 			rowItem[1] == statisticsRowWords[2] {
+			bar.Increment()
 			continue
 		}
 
 		studentCount, err := strconv.Atoi(rowItem[4])
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		apPercent, err := strconv.ParseFloat(rowItem[5], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		aPercent, err := strconv.ParseFloat(rowItem[6], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		amPercent, err := strconv.ParseFloat(rowItem[7], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		bpPercent, err := strconv.ParseFloat(rowItem[8], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		bPercent, err := strconv.ParseFloat(rowItem[9], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		bmPercent, err := strconv.ParseFloat(rowItem[10], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		cpPercent, err := strconv.ParseFloat(rowItem[11], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		cPercent, err := strconv.ParseFloat(rowItem[12], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		dPercent, err := strconv.ParseFloat(rowItem[13], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		dmPercent, err := strconv.ParseFloat(rowItem[14], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		fPercent, err := strconv.ParseFloat(rowItem[15], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 		gpa, err := strconv.ParseFloat(rowItem[16], 64)
 		if err != nil {
+			bar.Finish()
 			return nil, err
 		}
 
@@ -195,7 +214,9 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 			fCount:  int(math.Round(fPercent * float64(studentCount) / 100)),
 		}
 		res = append(res, gd)
+		bar.Increment()
 	}
+	bar.Finish()
 	return res, nil
 }
 
@@ -219,7 +240,7 @@ func main() {
 		page:        page,
 		year:        "2022",
 		semester:    "1",
-		facultyID:   "25",
+		facultyID:   "02",
 		facultyName: "工学部",
 	}
 
@@ -243,4 +264,52 @@ func main() {
 
 	fmt.Println(res)
 	fmt.Println("success scraping ✅ ")
+
+	filename := fmt.Sprintf("%s%s.csv", ctx.year, ctx.semester)
+	f, err := os.Create(filename)
+	defer f.Close()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return
+	}
+	w := csv.NewWriter(f)
+
+	for _, record := range res {
+		err := w.Write([]string{
+			record.subject,
+			record.subTitle,
+			record.class,
+			record.teacher,
+			record.year,
+			record.semester,
+			record.faculty,
+			strconv.Itoa(record.studentCount),
+			strconv.FormatFloat(record.gpa, 'f', -1, 64),
+
+			strconv.Itoa(record.apCount),
+			strconv.Itoa(record.aCount),
+			strconv.Itoa(record.amCount),
+			strconv.Itoa(record.bpCount),
+			strconv.Itoa(record.bCount),
+			strconv.Itoa(record.bmCount),
+			strconv.Itoa(record.cpCount),
+			strconv.Itoa(record.cCount),
+			strconv.Itoa(record.dCount),
+			strconv.Itoa(record.dmCount),
+			strconv.Itoa(record.fCount),
+		})
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+
+			err := os.Remove(filename)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+			}
+
+			return
+		}
+	}
+	w.Flush()
 }
