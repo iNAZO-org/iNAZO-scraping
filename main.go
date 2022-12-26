@@ -6,14 +6,17 @@ import (
 )
 
 func main() {
-	year := "2022"
-	semester := "1"
-	facultyID := "02"
+	opts, err := parseCommand()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return
+	}
+
 	ctx := &ScrapingContext{
-		year:        year,
-		semester:    semester,
-		facultyID:   facultyID,
-		facultyName: FACULTY_ID_TO_NAME[facultyID],
+		year:        opts.Year,
+		semester:    opts.Semester,
+		facultyID:   opts.FacultyID,
+		facultyName: FACULTY_ID_TO_NAME[opts.FacultyID],
 	}
 
 	fmt.Println("scraping... 🚀")
