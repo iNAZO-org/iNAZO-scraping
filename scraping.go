@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/sclevine/agouti"
@@ -45,7 +44,6 @@ func searchGradeDistribution(ctx *ScrapingContext) error {
 	// 検索画面へ移動
 	page := ctx.page
 	page.Navigate(SEARCH_URL)
-	time.Sleep(time.Second * 1)
 
 	// 検索条件の入力
 	selectItems := []SelectItem{
@@ -63,7 +61,6 @@ func searchGradeDistribution(ctx *ScrapingContext) error {
 		if err != nil {
 			return err
 		}
-		time.Sleep(time.Second * 1)
 	}
 
 	// 検索ボタンを押下
@@ -71,7 +68,6 @@ func searchGradeDistribution(ctx *ScrapingContext) error {
 	if err != nil {
 		return err
 	}
-	time.Sleep(time.Second * 1)
 
 	return nil
 }
@@ -85,7 +81,6 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 	if err != nil {
 		return err
 	}
-	time.Sleep(time.Second * 1)
 	return nil
 }
 
@@ -258,6 +253,7 @@ func scrapingGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, e
 	}
 
 	page, err := driver.NewPage()
+	page.SetImplicitWait(10)
 	if err != nil {
 		return nil, err
 	}

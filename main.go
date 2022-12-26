@@ -32,4 +32,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return
 	}
+
+	fmt.Println("success ✅")
 }
