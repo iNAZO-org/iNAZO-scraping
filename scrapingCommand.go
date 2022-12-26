@@ -1,0 +1,52 @@
+package main
+
+import (
+	"fmt"
+)
+
+type ScrapingCommand struct {
+	Positional struct {
+		Year      string
+		Semester  string
+		FacultyID string
+	} `positional-args:"yes" required:"yes"`
+}
+
+var scrapingCommand ScrapingCommand
+
+func (cmd *ScrapingCommand) Execute(args []string) error {
+	var facultyIDList []string // allに対応する
+
+	if cmd.Positional.FacultyID == "all" {
+		facultyIDList = getKeysFromMap(FACULTY_ID_TO_NAME)
+	} else {
+		facultyIDList = []string{cmd.Positional.FacultyID}
+	}
+
+	for _, faclutyID := range facultyIDList {
+		ctx := &ScrapingContext{
+			year:        cmd.Positional.Year,
+			semester:    cmd.Positional.Semester,
+			facultyID:   faclutyID,
+			facultyName: FACULTY_ID_TO_NAME[faclutyID],
+		}
+
+		fmt.Printf("scraping %s年%s学期 %s... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
+		result, err := scrapingGradeDistribution(ctx)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("writing data/%s%s/%s.csv... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
+		err = writeGradeDistibutionToCSV(ctx, result)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func init() {
+	parser.AddCommand("scraping", "scraping", "scraping", &scrapingCommand)
+}

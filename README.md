@@ -10,7 +10,7 @@
 **成績分布のスクレイピング**
 
 ```bash
-$ go run . <year> <semester> <facultyID>
+$ go run . scraping <year> <semester> <facultyID>
 ```
 
 **学期**
@@ -41,10 +41,10 @@ $ go run . <year> <semester> <facultyID>
 
 ### Example
 
-2022 年度 1 学期工学部の成績分布
+2022 年度 1 学期工学部の成績分布の取得
 
 ```bash
-$ go run . 2022 1 02
+$ go run . scraping 2022 1 02
 ```
 
 ## OUTPUT
