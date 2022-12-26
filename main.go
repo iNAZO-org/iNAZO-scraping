@@ -17,6 +17,19 @@ const (
 	RESULT_URL = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistResult11.aspx"
 )
 
+func validateGradeDistribution(gd *GradeDistributionItem) bool {
+	sumStudentNumber := (gd.apCount + gd.aCount + gd.amCount +
+		gd.bpCount + gd.bCount + gd.bmCount +
+		gd.cpCount + gd.cCount +
+		gd.dCount + gd.dCount +
+		gd.fCount)
+	if gd.studentCount != sumStudentNumber {
+		return false
+	}
+
+	return true
+}
+
 func searchGradeDistribution(ctx *ScrapingContext) error {
 	// 検索画面へ移動
 	page := ctx.page
@@ -200,6 +213,10 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 			dmCount: int(math.Round(dmPercent * float64(studentCount) / 100)),
 			fCount:  int(math.Round(fPercent * float64(studentCount) / 100)),
 		}
+		if !validateGradeDistribution(&gd) {
+			bar.Finish()
+			return nil, fmt.Errorf("grade distribution validation error")
+		}
 		res = append(res, gd)
 		bar.Increment()
 	}
@@ -249,7 +266,6 @@ func main() {
 		return
 	}
 
-	fmt.Println(res)
 	fmt.Println("success scraping ✅ ")
 
 	filename := fmt.Sprintf("%s%s.csv", ctx.year, ctx.semester)
