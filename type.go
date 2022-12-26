@@ -46,4 +46,6 @@ type Options struct {
 	Year      string `short:"y" long:"year" description:"Year of the grade you wish to obtain"`
 	Semester  string `short:"s" long:"semester" description:"The semester of the grade you wish to obtain"`
 	FacultyID string `short:"f" long:"facultyId" description:"Faculty ID of the grade you wish to obtain"`
+
+	facultyIDList []string // allに対応するためのフィールド
 }

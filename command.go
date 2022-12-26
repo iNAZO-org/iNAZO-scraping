@@ -24,5 +24,11 @@ func parseCommand() (*Options, error) {
 		opts.FacultyID = args[2]
 	}
 
+	if opts.FacultyID == "all" {
+		opts.facultyIDList = getKeysFromMap(FACULTY_ID_TO_NAME)
+	} else {
+		opts.facultyIDList = []string{opts.FacultyID}
+	}
+
 	return &opts, err
 }

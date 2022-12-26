@@ -12,25 +12,27 @@ func main() {
 		return
 	}
 
-	ctx := &ScrapingContext{
-		year:        opts.Year,
-		semester:    opts.Semester,
-		facultyID:   opts.FacultyID,
-		facultyName: FACULTY_ID_TO_NAME[opts.FacultyID],
-	}
+	for _, faclutyID := range opts.facultyIDList {
+		ctx := &ScrapingContext{
+			year:        opts.Year,
+			semester:    opts.Semester,
+			facultyID:   faclutyID,
+			facultyName: FACULTY_ID_TO_NAME[faclutyID],
+		}
 
-	fmt.Println("scraping... 🚀")
-	result, err := scrapingGradeDistribution(ctx)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return
-	}
+		fmt.Printf("scraping %s年%s学期 %s... 🚀\n", opts.Year, opts.Semester, ctx.facultyName)
+		result, err := scrapingGradeDistribution(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			return
+		}
 
-	fmt.Println("writing csv file... 🚀")
-	err = writeGradeDistibutionToCSV(ctx, result)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return
+		fmt.Printf("writing data/%s%s/%s.csv... 🚀\n", opts.Year, opts.Semester, ctx.facultyName)
+		err = writeGradeDistibutionToCSV(ctx, result)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			return
+		}
 	}
 
 	fmt.Println("success ✅")
