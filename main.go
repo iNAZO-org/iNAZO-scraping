@@ -225,7 +225,13 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 }
 
 func main() {
-	driver := agouti.ChromeDriver()
+	options := agouti.ChromeOptions(
+		"args", []string{
+			"--headless",
+			"--disable-gpu",
+		})
+
+	driver := agouti.ChromeDriver(options)
 	defer driver.Stop()
 
 	if err := driver.Start(); err != nil {
