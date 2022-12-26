@@ -81,22 +81,9 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 	for i := 2; i < n; i += 2 {
 		/*
 			rowItem: [
-				subject,
-				subTitle,
-				class,
-				teacher,
-				studentCount,
-				ap(%),
-				a(%),
-				am(%),
-				bp(%),
-				b(%),
-				bm(%),
-				cp(%),
-				c(%),
-				d(%),
-				dm(%),
-				f(%),
+				subject, subTitle, class, teacher, studentCount,
+				ap(%), a(%), bp(%), am(%), b(%), bm(%),
+				cp(%), c(%), d(%), dm(%), f(%),
 				gpa
 			]
 		*/
