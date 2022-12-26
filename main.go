@@ -15,16 +15,14 @@ func main() {
 		facultyName: "工学部",
 	}
 
-	fmt.Println("start scraping 🚀")
-
+	fmt.Println("scraping... 🚀")
 	result, err := scrapingGradeDistribution(ctx)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return
 	}
 
-	fmt.Println("success scraping ✅ ")
-
+	fmt.Println("writing csv file... 🚀")
 	filename := fmt.Sprintf("%s%s.csv", ctx.year, ctx.semester)
 	f, err := os.Create(filename)
 	defer f.Close()
