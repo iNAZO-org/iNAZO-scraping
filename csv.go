@@ -4,12 +4,18 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"path"
 	"strconv"
 )
 
 func writeGradeDistibutionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem) error {
-	filename := fmt.Sprintf("%s%s.csv", ctx.year, ctx.semester)
-	f, err := os.Create(filename)
+	filePath := fmt.Sprintf("data/%s%s/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
+	folderPath := path.Dir(filePath)
+	err := os.MkdirAll(folderPath, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(filePath)
 	defer f.Close()
 
 	if err != nil {
@@ -43,7 +49,7 @@ func writeGradeDistibutionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem
 		})
 
 		if err != nil {
-			err := os.Remove(filename)
+			err := os.Remove(filePath)
 			if err != nil {
 				return err
 			}
