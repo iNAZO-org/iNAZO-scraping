@@ -48,5 +48,6 @@ func (cmd *ScrapingCommand) Execute(args []string) error {
 }
 
 func init() {
-	parser.AddCommand("scraping", "scraping", "scraping", &scrapingCommand)
+	const description = "Scraping from North University's grade distribution site and saving as a CSV file."
+	parser.AddCommand("scraping", description, description, &scrapingCommand)
 }

@@ -17,6 +17,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jawher/mow.cli v1.2.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
