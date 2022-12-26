@@ -1,6 +1,6 @@
 # iNAZO-scraping
 
-[北海道大学 成績分布ＷＥＢ公開システム](https|//educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx)から成績分布をスクレイピングするツールです。成績分布を CSV の形式で保存、または DB にデータの保存が可能です。
+[北海道大学 成績分布ＷＥＢ公開システム](https://educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx)から成績分布をスクレイピングするツールです。成績分布を CSV の形式で保存、または DB にデータの保存が可能です。
 
 ## Usage
 
