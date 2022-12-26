@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -10,6 +12,21 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/sclevine/agouti"
 )
+
+func readScriptFile() (string, error) {
+	file, err := os.Open("script.js")
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	script, err := ioutil.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
+	return string(script), nil
+}
 
 func validateGradeDistribution(gd *GradeDistributionItem) error {
 	sumStudentNumber := (gd.apCount + gd.aCount + gd.amCount +
@@ -76,6 +93,11 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 	var result []GradeDistributionItem = make([]GradeDistributionItem, 0)
 	page := ctx.page
 
+	script, err := readScriptFile()
+	if err != nil {
+		return nil, err
+	}
+
 	trs := page.AllByXPath(`//*[@id="gvResult"]/tbody/tr`)
 	n, err := trs.Count()
 	if err != nil {
@@ -94,38 +116,18 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 				gpa
 			]
 		*/
-		const lowerBound = 1
-		const upperBound = 17
 		statisticsRowWords := []string{
 			"合計", "統計", "総計",
 		}
 
+		/*
+			各tdをText()で取得するとWebDriverとの通信がボトルネックになるので、
+			JavaScriptで一度に要素を取得する。
+			:===:で区切る。
+		*/
 		var scriptResult string
 		err := page.RunScript(
-			`
-			{
-				document.getElementsByXPath = function (expression, parentElement) {
-				  var r = [];
-				  var x = document.evaluate(
-					expression,
-					parentElement || document,
-					null,
-					XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-					null
-				  );
-				  for (var i = 0, l = x.snapshotLength; i < l; i++) {
-					r.push(x.snapshotItem(i));
-				  }
-				  return r;
-				};
-				return document
-				  .getElementsByXPath(
-					'//*[@id="gvResult"]/tbody/tr[position()=' + pos + "]/td"
-				  )
-				  .map((v) => v.textContent)
-				  .join(":---:");
-			  }
-			`,
+			script,
 			map[string]interface{}{"pos": i + 1},
 			&scriptResult,
 		)

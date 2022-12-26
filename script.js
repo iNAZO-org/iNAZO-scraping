@@ -1,3 +1,13 @@
+/*
+  [input]
+  pos: number
+
+  [output]
+  string (:===:で要素を区切り連結している)
+
+  [description]
+  Seleinumで実行される。北大の成績分布の一覧ページで、一行の要素を「:===:」で連結して返す。
+*/
 {
   document.getElementsByXPath = function (expression, parentElement) {
     var r = [];
