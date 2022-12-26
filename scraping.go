@@ -93,16 +93,15 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 		return nil, err
 	}
 
-	trs := page.AllByXPath(`//*[@id="gvResult"]/tbody/tr`)
+	trs := page.AllByXPath(`//*[@id="gvResult"]/tbody/tr[count(td)=18]`)
 	n, err := trs.Count()
 	if err != nil {
 		return nil, err
 	}
-	validTrsCount := (n - 2) / 2
+	validTrsCount := n
 	bar := pb.StartNew(validTrsCount)
 
-	// 初めの2個, 偶数番目のtrは成績データと無関係なので無視する
-	for i := 2; i < n; i += 2 {
+	for i := 0; i < n; i++ {
 		/*
 			rowItem: [
 				subject, subTitle, class, teacher, studentCount,

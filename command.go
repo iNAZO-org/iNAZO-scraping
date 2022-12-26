@@ -15,7 +15,7 @@ func parseCommand() (*Options, error) {
 
 	if opts.Year == "" || opts.Semester == "" || opts.FacultyID == "" {
 		if len(args) != 3 {
-			err := fmt.Errorf("require three args\n")
+			err := fmt.Errorf("require three args")
 			return nil, err
 		}
 

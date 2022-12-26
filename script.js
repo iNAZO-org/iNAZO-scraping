@@ -25,7 +25,7 @@
   };
   return document
     .getElementsByXPath(
-      '//*[@id="gvResult"]/tbody/tr[position()=' + pos + "]/td"
+      '//*[@id="gvResult"]/tbody/tr[count(td)=18][position()=' + pos + "]/td"
     )
     .map((v) => v.textContent)
     .join(":---:");
