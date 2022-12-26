@@ -1,16 +1,23 @@
 # iNAZO-scraping
 
 [北海道大学 成績分布ＷＥＢ公開システム](https://educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx)から成績分布をスクレイピングするツールです。成績分布を CSV の形式で保存、または DB にデータの保存が可能です。
+(※ 旧成績には非対応です)
 
 ## Usage
 
-先にインストール済みの Chrome のバージョンに対応した WebDriver を事前にダウンロードしてパスを通してください。
+先にインストール済みの Chrome のバージョンに対応した WebDriver を事前にダウンロードしてパスを通す。
 
 **成績分布のスクレイピング**
 
 ```bash
 $ go run . <year> <semester> <facultyID>
 ```
+
+**学期**
+|semester|学期|
+| -- | -- |
+|1|1 学期|
+|2|2 学期|
 
 **学部 ID の対応表**
 | ID | 学部 |
@@ -30,6 +37,7 @@ $ go run . <year> <semester> <facultyID>
 |42| 医学部|
 |43| 歯学部|
 |44| 薬学部|
+|all| 一度に全学部の成績分布を取得|
 
 ### Example
 
