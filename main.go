@@ -6,11 +6,14 @@ import (
 )
 
 func main() {
+	year := "2022"
+	semester := "1"
+	facultyID := "02"
 	ctx := &ScrapingContext{
-		year:        "2022",
-		semester:    "1",
-		facultyID:   "02",
-		facultyName: "工学部",
+		year:        year,
+		semester:    semester,
+		facultyID:   facultyID,
+		facultyName: FACULTY_ID_TO_NAME[facultyID],
 	}
 
 	fmt.Println("scraping... 🚀")

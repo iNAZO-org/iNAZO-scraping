@@ -10,11 +10,6 @@ import (
 	"github.com/sclevine/agouti"
 )
 
-const (
-	SEARCH_URL = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx"
-	RESULT_URL = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistResult11.aspx"
-)
-
 func validateGradeDistribution(gd *GradeDistributionItem) bool {
 	sumStudentNumber := (gd.apCount + gd.aCount + gd.amCount +
 		gd.bpCount + gd.bCount + gd.bmCount +
