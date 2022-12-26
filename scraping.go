@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
@@ -93,22 +94,45 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 				gpa
 			]
 		*/
-		rowItem := make([]string, 0)
 		const lowerBound = 1
 		const upperBound = 17
 		statisticsRowWords := []string{
 			"合計", "統計", "総計",
 		}
 
-		tds := trs.At(i).All("td")
-		for j := lowerBound; j <= upperBound; j++ {
-			text, err := tds.At(j).Text()
-			if err != nil {
-				bar.Finish()
-				return nil, err
-			}
-			rowItem = append(rowItem, text)
+		var scriptResult string
+		err := page.RunScript(
+			`
+			{
+				document.getElementsByXPath = function (expression, parentElement) {
+				  var r = [];
+				  var x = document.evaluate(
+					expression,
+					parentElement || document,
+					null,
+					XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+					null
+				  );
+				  for (var i = 0, l = x.snapshotLength; i < l; i++) {
+					r.push(x.snapshotItem(i));
+				  }
+				  return r;
+				};
+				return document
+				  .getElementsByXPath(
+					'//*[@id="gvResult"]/tbody/tr[position()=' + pos + "]/td"
+				  )
+				  .map((v) => v.textContent)
+				  .join(":---:");
+			  }
+			`,
+			map[string]interface{}{"pos": i + 1},
+			&scriptResult,
+		)
+		if err != nil {
+			return nil, err
 		}
+		rowItem := strings.Split(scriptResult, ":---:")[1:]
 
 		if rowItem[1] == statisticsRowWords[0] ||
 			rowItem[1] == statisticsRowWords[1] ||
