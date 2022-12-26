@@ -10,24 +10,24 @@ import (
 	"github.com/sclevine/agouti"
 )
 
-func validateGradeDistribution(gd *GradeDistributionItem) bool {
+func validateGradeDistribution(gd *GradeDistributionItem) error {
 	sumStudentNumber := (gd.apCount + gd.aCount + gd.amCount +
 		gd.bpCount + gd.bCount + gd.bmCount +
 		gd.cpCount + gd.cCount +
-		gd.dCount + gd.dCount +
+		gd.dCount + gd.dmCount +
 		gd.fCount)
 	if gd.studentCount != sumStudentNumber {
-		return false
+		return fmt.Errorf("grade distribution validation error:\n %+v", gd)
 	}
 
-	return true
+	return nil
 }
 
 func searchGradeDistribution(ctx *ScrapingContext) error {
 	// 検索画面へ移動
 	page := ctx.page
 	page.Navigate(SEARCH_URL)
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 1)
 
 	// 検索条件の入力
 	selectItems := []SelectItem{
@@ -53,7 +53,7 @@ func searchGradeDistribution(ctx *ScrapingContext) error {
 	if err != nil {
 		return err
 	}
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 1)
 
 	return nil
 }
@@ -67,7 +67,7 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 	if err != nil {
 		return err
 	}
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 1)
 	return nil
 }
 
@@ -206,9 +206,9 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 			dmCount: int(math.Round(dmPercent * float64(studentCount) / 100)),
 			fCount:  int(math.Round(fPercent * float64(studentCount) / 100)),
 		}
-		if !validateGradeDistribution(&gd) {
+		if err := validateGradeDistribution(&gd); err != nil {
 			bar.Finish()
-			return nil, fmt.Errorf("grade distribution validation error")
+			return nil, err
 		}
 		result = append(result, gd)
 		bar.Increment()
