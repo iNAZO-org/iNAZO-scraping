@@ -1,10 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"os"
-
 	_ "github.com/lib/pq"
 )
 
@@ -12,19 +8,70 @@ type UpdateGradeCommand struct{}
 
 var updateGradeCommand UpdateGradeCommand
 
-func (cmd *UpdateGradeCommand) Execute(args []string) error {
-	connStr := os.Getenv("DB_URL")
-	db, err := sql.Open("postgres", connStr)
+func existGradeDistributionRow(gd GradeDistributionItem) (bool, error) {
+	var cnt int
+	err := db.QueryRow(`
+		SELECT COUNT(*) FROM grade_distribution
+		WHERE
+			subject=$1 AND sub_title=$2 AND class=$3 AND
+			teacher=$4 AND year=$5 AND semester=$6 AND faculty=$7 AND student_count=$8 AND
+			gpa=$9 AND ap_count=$10 AND a_count=$11 AND am_count=$12 AND bp_count=$13 AND
+			b_count=$14 AND bm_count=$15 AND cp_count=$16 AND c_count=$17 AND d_count=$18 AND
+			dm_count=$19 AND f_count=$20`,
+		gd.subject, gd.subTitle, gd.class, gd.teacher, gd.year, gd.semester,
+		gd.faculty, gd.studentCount, gd.gpa, gd.apCount, gd.aCount, gd.amCount,
+		gd.bpCount, gd.bCount, gd.bmCount, gd.cpCount, gd.cCount, gd.dCount,
+		gd.dmCount, gd.fCount,
+	).Scan(&cnt)
 	if err != nil {
-		return err
+		return false, err
 	}
-	defer db.Close()
+	existFlag := cnt > 0
+	return existFlag, nil
+}
 
-	gradeList, err := readGradeDistributionFromCSV("data/20221/総合教育部.csv")
+func insertGradeDistributionList(gdList []GradeDistributionItem) error {
+	for _, gd := range gdList {
+		existFlag, err := existGradeDistributionRow(gd)
+		if err != nil {
+			return err
+		}
+		// 既に登録済みの項目は2重に保存しない
+		if existFlag {
+			continue
+		}
+
+		if _, err := db.Exec(`
+		INSERT INTO grade_distribution(
+			subject, sub_title, class, teacher, year,
+			semester, faculty, student_count, gpa,
+			ap_count, a_count, am_count,
+			bp_count, b_count, bm_count,
+			cp_count, c_count, d_count,
+			dm_count, f_count
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`,
+			gd.subject, gd.subTitle, gd.class, gd.teacher, gd.year, gd.semester,
+			gd.faculty, gd.studentCount, gd.gpa, gd.apCount, gd.aCount, gd.amCount,
+			gd.bpCount, gd.bCount, gd.bmCount, gd.cpCount, gd.cCount, gd.dCount,
+			gd.dmCount, gd.fCount,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (cmd *UpdateGradeCommand) Execute(args []string) error {
+	gdList, err := readGradeDistributionFromCSV("data/20221/総合教育部.csv")
 	if err != nil {
 		return err
 	}
-	fmt.Println(gradeList)
+
+	err = insertGradeDistributionList(gdList)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

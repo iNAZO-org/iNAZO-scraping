@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 )
 
 var parser = flags.NewParser(&struct{}{}, flags.Default)
+var db *sql.DB
 
 func init() {
 	err := godotenv.Load(".env")
@@ -20,7 +22,16 @@ func init() {
 }
 
 func main() {
-	_, err := parser.Parse()
+	connStr := os.Getenv("DB_URL")
+	var err error
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		return
+	}
+	defer db.Close()
+
+	_, err = parser.Parse()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return
