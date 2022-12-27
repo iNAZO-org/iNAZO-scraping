@@ -23,7 +23,14 @@ CREATE TABLE grade_distribution (
 	f_count  INTEGER NOT NULL,
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+	UNIQUE (subject, sub_title, class, teacher, year,
+			semester, faculty, student_count, gpa,
+			ap_count, a_count, am_count,
+			bp_count, b_count, bm_count,
+			cp_count, c_count, d_count,
+			dm_count, f_count)
 );
 
 CREATE FUNCTION set_update_time() RETURNS TRIGGER AS '
