@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"io/fs"
+	"path/filepath"
+
 	_ "github.com/lib/pq"
 )
 
@@ -63,12 +67,26 @@ func insertGradeDistributionList(gdList []GradeDistributionItem) error {
 }
 
 func (cmd *UpdateGradeCommand) Execute(args []string) error {
-	gdList, err := readGradeDistributionFromCSV("data/20221/総合教育部.csv")
-	if err != nil {
-		return err
-	}
+	err := filepath.Walk("./data", func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		fmt.Printf("saving %s...\n", path)
+		gdList, err := readGradeDistributionFromCSV(path)
+		if err != nil {
+			return err
+		}
+		err = insertGradeDistributionList(gdList)
+		if err != nil {
+			return err
+		}
 
-	err = insertGradeDistributionList(gdList)
+		return nil
+	})
+
 	if err != nil {
 		return err
 	}
