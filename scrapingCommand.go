@@ -38,7 +38,7 @@ func (cmd *ScrapingCommand) Execute(args []string) error {
 		}
 
 		fmt.Printf("writing data/%d%d/%s.csv... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
-		err = writeGradeDistibutionToCSV(ctx, result)
+		err = writeGradeDistributionToCSV(ctx, result)
 		if err != nil {
 			return err
 		}

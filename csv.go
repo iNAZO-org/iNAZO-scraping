@@ -8,7 +8,119 @@ import (
 	"strconv"
 )
 
-func writeGradeDistibutionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem) error {
+func deserializationGradeDistribution(row []string) (*GradeDistributionItem, error) {
+	year, err := strconv.Atoi(row[4])
+	if err != nil {
+		return nil, err
+	}
+	semester, err := strconv.Atoi(row[5])
+	if err != nil {
+		return nil, err
+	}
+	studentCount, err := strconv.Atoi(row[7])
+	if err != nil {
+		return nil, err
+	}
+	gpa, err := strconv.ParseFloat(row[8], 64)
+	if err != nil {
+		return nil, err
+	}
+	apCount, err := strconv.Atoi(row[9])
+	if err != nil {
+		return nil, err
+	}
+	aCount, err := strconv.Atoi(row[10])
+	if err != nil {
+		return nil, err
+	}
+	amCount, err := strconv.Atoi(row[11])
+	if err != nil {
+		return nil, err
+	}
+	bpCount, err := strconv.Atoi(row[12])
+	if err != nil {
+		return nil, err
+	}
+	bCount, err := strconv.Atoi(row[13])
+	if err != nil {
+		return nil, err
+	}
+	bmCount, err := strconv.Atoi(row[14])
+	if err != nil {
+		return nil, err
+	}
+	cpCount, err := strconv.Atoi(row[15])
+	if err != nil {
+		return nil, err
+	}
+	cCount, err := strconv.Atoi(row[16])
+	if err != nil {
+		return nil, err
+	}
+	dCount, err := strconv.Atoi(row[17])
+	if err != nil {
+		return nil, err
+	}
+	dmCount, err := strconv.Atoi(row[18])
+	if err != nil {
+		return nil, err
+	}
+	fCount, err := strconv.Atoi(row[19])
+	if err != nil {
+		return nil, err
+	}
+
+	return &GradeDistributionItem{
+		subject:      row[0],
+		subTitle:     row[1],
+		class:        row[2],
+		teacher:      row[3],
+		year:         year,
+		semester:     semester,
+		faculty:      row[6],
+		studentCount: studentCount,
+		gpa:          gpa,
+
+		apCount: apCount,
+		aCount:  aCount,
+		amCount: amCount,
+		bpCount: bpCount,
+		bCount:  bCount,
+		bmCount: bmCount,
+		cpCount: cpCount,
+		cCount:  cCount,
+		dCount:  dCount,
+		dmCount: dmCount,
+		fCount:  fCount,
+	}, nil
+}
+
+func readGradeDistributionFromCSV(filePath string) ([]GradeDistributionItem, error) {
+	var result []GradeDistributionItem
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	rows, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, row := range rows {
+		gd, err := deserializationGradeDistribution(row)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *gd)
+	}
+
+	return result, nil
+}
+
+func writeGradeDistributionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem) error {
 	filePath := fmt.Sprintf("data/%d%d/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
 	folderPath := path.Dir(filePath)
 	err := os.MkdirAll(folderPath, os.ModePerm)
