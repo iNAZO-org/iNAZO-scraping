@@ -9,7 +9,7 @@ import (
 )
 
 func writeGradeDistibutionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem) error {
-	filePath := fmt.Sprintf("data/%s%s/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
+	filePath := fmt.Sprintf("data/%d%d/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
 	folderPath := path.Dir(filePath)
 	err := os.MkdirAll(folderPath, os.ModePerm)
 	if err != nil {
@@ -29,8 +29,8 @@ func writeGradeDistibutionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem
 			record.subTitle,
 			record.class,
 			record.teacher,
-			record.year,
-			record.semester,
+			strconv.Itoa(record.year),
+			strconv.Itoa(record.semester),
 			record.faculty,
 			strconv.Itoa(record.studentCount),
 			strconv.FormatFloat(record.gpa, 'f', -1, 64),

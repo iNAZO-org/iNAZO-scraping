@@ -6,8 +6,8 @@ import (
 
 type ScrapingCommand struct {
 	Positional struct {
-		Year      string
-		Semester  string
+		Year      int
+		Semester  int
 		FacultyID string
 	} `positional-args:"yes" required:"yes"`
 }
@@ -31,13 +31,13 @@ func (cmd *ScrapingCommand) Execute(args []string) error {
 			facultyName: FACULTY_ID_TO_NAME[faclutyID],
 		}
 
-		fmt.Printf("scraping %s年%s学期 %s... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
+		fmt.Printf("scraping %d年%d学期 %s... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
 		result, err := scrapingGradeDistribution(ctx)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("writing data/%s%s/%s.csv... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
+		fmt.Printf("writing data/%d%d/%s.csv... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)
 		err = writeGradeDistibutionToCSV(ctx, result)
 		if err != nil {
 			return err

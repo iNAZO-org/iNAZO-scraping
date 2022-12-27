@@ -7,8 +7,8 @@ import (
 type ScrapingContext struct {
 	driver      *agouti.WebDriver
 	page        *agouti.Page
-	year        string
-	semester    string
+	year        int
+	semester    int
 	facultyID   string
 	facultyName string
 }
@@ -23,8 +23,8 @@ type GradeDistributionItem struct {
 	subTitle     string
 	class        string
 	teacher      string
-	year         string
-	semester     string
+	year         int
+	semester     int
 	faculty      string
 	studentCount int
 	gpa          float64

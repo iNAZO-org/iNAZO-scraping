@@ -47,10 +47,10 @@ func searchGradeDistribution(ctx *ScrapingContext) error {
 
 	// 検索条件の入力
 	selectItems := []SelectItem{
-		{"ddlTerm", ctx.year + ctx.semester}, // 年度・学期
-		{"ddlDiv", "02"},                     // 課程
-		{"ddlFac", ctx.facultyID},            // 学部
-		{"ddlDataKind", "1"},                 // データ種別
+		{"ddlTerm", strconv.Itoa(ctx.year) + strconv.Itoa(ctx.semester)}, // 年度・学期
+		{"ddlDiv", "02"},          // 課程
+		{"ddlFac", ctx.facultyID}, // 学部
+		{"ddlDataKind", "1"},      // データ種別
 	}
 
 	for _, item := range selectItems {
