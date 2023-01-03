@@ -6,15 +6,15 @@ import "gorm.io/gorm"
 type GradeDistribution struct {
 	gorm.Model
 
-	Subject      string
-	SubTitle     string
-	Class        string
-	Teacher      string
-	Year         int
-	Semester     int
-	Faculty      string
-	StudentCount int
-	Gpa          float64
+	Subject      string  `gorm:"uniqueIndex:unique_column"`
+	SubTitle     string  `gorm:"uniqueIndex:unique_column"`
+	Class        string  `gorm:"uniqueIndex:unique_column"`
+	Teacher      string  `gorm:"uniqueIndex:unique_column"`
+	Year         int     `gorm:"uniqueIndex:unique_column"`
+	Semester     int     `gorm:"uniqueIndex:unique_column"`
+	Faculty      string  `gorm:"uniqueIndex:unique_column"`
+	StudentCount int     `gorm:"uniqueIndex:unique_column"`
+	Gpa          float64 `gorm:"uniqueIndex:unique_column"`
 
 	ApCount int // A+の人数
 	ACount  int // A
