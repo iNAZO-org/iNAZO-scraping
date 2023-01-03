@@ -18,7 +18,7 @@ func (cmd *ScrapingCommand) Execute(args []string) error {
 	var facultyIDList []string // allに対応する
 
 	if cmd.Positional.FacultyID == "all" {
-		facultyIDList = getKeysFromMap(FACULTY_ID_TO_NAME)
+		facultyIDList = getKeysFromMap(facultyIdToName)
 	} else {
 		facultyIDList = []string{cmd.Positional.FacultyID}
 	}
@@ -28,7 +28,7 @@ func (cmd *ScrapingCommand) Execute(args []string) error {
 			year:        cmd.Positional.Year,
 			semester:    cmd.Positional.Semester,
 			facultyID:   faclutyID,
-			facultyName: FACULTY_ID_TO_NAME[faclutyID],
+			facultyName: facultyIdToName[faclutyID],
 		}
 
 		fmt.Printf("scraping %d年%d学期 %s... 🚀\n", cmd.Positional.Year, cmd.Positional.Semester, ctx.facultyName)

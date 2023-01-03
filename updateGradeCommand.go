@@ -12,7 +12,7 @@ type UpdateGradeCommand struct{}
 
 var updateGradeCommand UpdateGradeCommand
 
-func existGradeDistributionRow(gd GradeDistributionItem) (bool, error) {
+func existGradeDistributionRow(gd GradeDistribution) (bool, error) {
 	var cnt int
 	err := db.QueryRow(`
 		SELECT COUNT(*) FROM grade_distribution
@@ -34,7 +34,7 @@ func existGradeDistributionRow(gd GradeDistributionItem) (bool, error) {
 	return existFlag, nil
 }
 
-func insertGradeDistributionList(gdList []GradeDistributionItem) error {
+func insertGradeDistributionList(gdList []GradeDistribution) error {
 	for _, gd := range gdList {
 		existFlag, err := existGradeDistributionRow(gd)
 		if err != nil {

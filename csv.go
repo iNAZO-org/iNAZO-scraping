@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func deserializationGradeDistribution(row []string) (*GradeDistributionItem, error) {
+func deserializationGradeDistribution(row []string) (*GradeDistribution, error) {
 	year, err := strconv.Atoi(row[4])
 	if err != nil {
 		return nil, err
@@ -70,33 +70,33 @@ func deserializationGradeDistribution(row []string) (*GradeDistributionItem, err
 		return nil, err
 	}
 
-	return &GradeDistributionItem{
-		subject:      row[0],
-		subTitle:     row[1],
-		class:        row[2],
-		teacher:      row[3],
-		year:         year,
-		semester:     semester,
-		faculty:      row[6],
-		studentCount: studentCount,
-		gpa:          gpa,
+	return &GradeDistribution{
+		Subject:      row[0],
+		SubTitle:     row[1],
+		Class:        row[2],
+		Teacher:      row[3],
+		Year:         year,
+		Semester:     semester,
+		Faculty:      row[6],
+		StudentCount: studentCount,
+		Gpa:          gpa,
 
-		apCount: apCount,
-		aCount:  aCount,
-		amCount: amCount,
-		bpCount: bpCount,
-		bCount:  bCount,
-		bmCount: bmCount,
-		cpCount: cpCount,
-		cCount:  cCount,
-		dCount:  dCount,
-		dmCount: dmCount,
-		fCount:  fCount,
+		ApCount: apCount,
+		ACount:  aCount,
+		AmCount: amCount,
+		BpCount: bpCount,
+		BCount:  bCount,
+		BmCount: bmCount,
+		CpCount: cpCount,
+		CCount:  cCount,
+		DCount:  dCount,
+		DmCount: dmCount,
+		FCount:  fCount,
 	}, nil
 }
 
-func readGradeDistributionFromCSV(filePath string) ([]GradeDistributionItem, error) {
-	var result []GradeDistributionItem
+func readGradeDistributionFromCSV(filePath string) ([]GradeDistribution, error) {
+	var result []GradeDistribution
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func readGradeDistributionFromCSV(filePath string) ([]GradeDistributionItem, err
 	return result, nil
 }
 
-func writeGradeDistributionToCSV(ctx *ScrapingContext, gd []GradeDistributionItem) error {
+func writeGradeDistributionToCSV(ctx *ScrapingContext, gd []GradeDistribution) error {
 	filePath := fmt.Sprintf("data/%d%d/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
 	folderPath := path.Dir(filePath)
 	err := os.MkdirAll(folderPath, os.ModePerm)
@@ -137,27 +137,27 @@ func writeGradeDistributionToCSV(ctx *ScrapingContext, gd []GradeDistributionIte
 
 	for _, record := range gd {
 		err := w.Write([]string{
-			record.subject,
-			record.subTitle,
-			record.class,
-			record.teacher,
-			strconv.Itoa(record.year),
-			strconv.Itoa(record.semester),
-			record.faculty,
-			strconv.Itoa(record.studentCount),
-			strconv.FormatFloat(record.gpa, 'f', -1, 64),
+			record.Subject,
+			record.SubTitle,
+			record.Class,
+			record.Teacher,
+			strconv.Itoa(record.Year),
+			strconv.Itoa(record.Semester),
+			record.Faculty,
+			strconv.Itoa(record.StudentCount),
+			strconv.FormatFloat(record.Gpa, 'f', -1, 64),
 
-			strconv.Itoa(record.apCount),
-			strconv.Itoa(record.aCount),
-			strconv.Itoa(record.amCount),
-			strconv.Itoa(record.bpCount),
-			strconv.Itoa(record.bCount),
-			strconv.Itoa(record.bmCount),
-			strconv.Itoa(record.cpCount),
-			strconv.Itoa(record.cCount),
-			strconv.Itoa(record.dCount),
-			strconv.Itoa(record.dmCount),
-			strconv.Itoa(record.fCount),
+			strconv.Itoa(record.ApCount),
+			strconv.Itoa(record.ACount),
+			strconv.Itoa(record.AmCount),
+			strconv.Itoa(record.BpCount),
+			strconv.Itoa(record.BCount),
+			strconv.Itoa(record.BmCount),
+			strconv.Itoa(record.CpCount),
+			strconv.Itoa(record.CCount),
+			strconv.Itoa(record.DCount),
+			strconv.Itoa(record.DmCount),
+			strconv.Itoa(record.FCount),
 		})
 
 		if err != nil {

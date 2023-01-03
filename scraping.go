@@ -27,13 +27,13 @@ func readScriptFile() (string, error) {
 	return string(script), nil
 }
 
-func validateGradeDistribution(gd *GradeDistributionItem) error {
-	sumStudentNumber := (gd.apCount + gd.aCount + gd.amCount +
-		gd.bpCount + gd.bCount + gd.bmCount +
-		gd.cpCount + gd.cCount +
-		gd.dCount + gd.dmCount +
-		gd.fCount)
-	if gd.studentCount != sumStudentNumber {
+func validateGradeDistribution(gd *GradeDistribution) error {
+	sumStudentNumber := (gd.ApCount + gd.ACount + gd.AmCount +
+		gd.BpCount + gd.BCount + gd.BmCount +
+		gd.CpCount + gd.CCount +
+		gd.DCount + gd.DmCount +
+		gd.FCount)
+	if gd.StudentCount != sumStudentNumber {
 		return fmt.Errorf("grade distribution validation error:\n %+v", gd)
 	}
 
@@ -43,7 +43,7 @@ func validateGradeDistribution(gd *GradeDistributionItem) error {
 func searchGradeDistribution(ctx *ScrapingContext) error {
 	// 検索画面へ移動
 	page := ctx.page
-	page.Navigate(SEARCH_URL)
+	page.Navigate(searchUrl)
 
 	// 検索条件の入力
 	selectItems := []SelectItem{
@@ -84,8 +84,8 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 	return nil
 }
 
-func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, error) {
-	var result []GradeDistributionItem = make([]GradeDistributionItem, 0)
+func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
+	var result []GradeDistribution = make([]GradeDistribution, 0)
 	page := ctx.page
 
 	script, err := readScriptFile()
@@ -203,28 +203,28 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 			return nil, err
 		}
 
-		gd := GradeDistributionItem{
-			subject:      rowItem[0],
-			subTitle:     rowItem[1],
-			class:        rowItem[2],
-			teacher:      rowItem[3],
-			studentCount: studentCount,
-			gpa:          gpa,
-			year:         ctx.year,
-			semester:     ctx.semester,
-			faculty:      ctx.facultyName,
+		gd := GradeDistribution{
+			Subject:      rowItem[0],
+			SubTitle:     rowItem[1],
+			Class:        rowItem[2],
+			Teacher:      rowItem[3],
+			StudentCount: studentCount,
+			Gpa:          gpa,
+			Year:         ctx.year,
+			Semester:     ctx.semester,
+			Faculty:      ctx.facultyName,
 
-			apCount: int(math.Round(apPercent * float64(studentCount) / 100)),
-			aCount:  int(math.Round(aPercent * float64(studentCount) / 100)),
-			amCount: int(math.Round(amPercent * float64(studentCount) / 100)),
-			bpCount: int(math.Round(bpPercent * float64(studentCount) / 100)),
-			bCount:  int(math.Round(bPercent * float64(studentCount) / 100)),
-			bmCount: int(math.Round(bmPercent * float64(studentCount) / 100)),
-			cpCount: int(math.Round(cpPercent * float64(studentCount) / 100)),
-			cCount:  int(math.Round(cPercent * float64(studentCount) / 100)),
-			dCount:  int(math.Round(dPercent * float64(studentCount) / 100)),
-			dmCount: int(math.Round(dmPercent * float64(studentCount) / 100)),
-			fCount:  int(math.Round(fPercent * float64(studentCount) / 100)),
+			ApCount: int(math.Round(apPercent * float64(studentCount) / 100)),
+			ACount:  int(math.Round(aPercent * float64(studentCount) / 100)),
+			AmCount: int(math.Round(amPercent * float64(studentCount) / 100)),
+			BpCount: int(math.Round(bpPercent * float64(studentCount) / 100)),
+			BCount:  int(math.Round(bPercent * float64(studentCount) / 100)),
+			BmCount: int(math.Round(bmPercent * float64(studentCount) / 100)),
+			CpCount: int(math.Round(cpPercent * float64(studentCount) / 100)),
+			CCount:  int(math.Round(cPercent * float64(studentCount) / 100)),
+			DCount:  int(math.Round(dPercent * float64(studentCount) / 100)),
+			DmCount: int(math.Round(dmPercent * float64(studentCount) / 100)),
+			FCount:  int(math.Round(fPercent * float64(studentCount) / 100)),
 		}
 		if err := validateGradeDistribution(&gd); err != nil {
 			bar.Finish()
@@ -237,7 +237,7 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, erro
 	return result, nil
 }
 
-func scrapingGradeDistribution(ctx *ScrapingContext) ([]GradeDistributionItem, error) {
+func scrapingGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
 	options := agouti.ChromeOptions(
 		"args", []string{
 			"--headless",

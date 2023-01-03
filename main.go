@@ -1,16 +1,17 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
 	flags "github.com/jessevdk/go-flags"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var parser = flags.NewParser(&struct{}{}, flags.Default)
-var db *sql.DB
+var db *gorm.DB
 
 func init() {
 	err := godotenv.Load(".env")
@@ -24,12 +25,11 @@ func init() {
 func main() {
 	connStr := os.Getenv("DB_URL")
 	var err error
-	db, err = sql.Open("postgres", connStr)
+	db, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return
 	}
-	defer db.Close()
 
 	_, err = parser.Parse()
 	if err != nil {
