@@ -9,16 +9,11 @@ import (
 
 var db *gorm.DB
 
-func Init(models interface{}) {
+func Init() {
 	var err error
 	dsn := os.Getenv("DB_URL")
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
-	if err != nil {
-		panic(err)
-	}
-
-	err = db.AutoMigrate(models)
 	if err != nil {
 		panic(err)
 	}

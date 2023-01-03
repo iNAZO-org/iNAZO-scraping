@@ -3,8 +3,6 @@ package scraping
 import (
 	"fmt"
 	"io/ioutil"
-	"karintou8710/iNAZO-scraping/models"
-	"karintou8710/iNAZO-scraping/setting"
 	"math"
 	"os"
 	"strconv"
@@ -12,6 +10,9 @@ import (
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/sclevine/agouti"
+
+	"karintou8710/iNAZO-scraping/models"
+	"karintou8710/iNAZO-scraping/setting"
 )
 
 type ScrapingContext struct {
@@ -100,8 +101,8 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 	return nil
 }
 
-func fetchGradeDistribution(ctx *ScrapingContext) ([]models.GradeDistribution, error) {
-	var result []models.GradeDistribution = make([]models.GradeDistribution, 0)
+func fetchGradeDistribution(ctx *ScrapingContext) ([]*models.GradeDistribution, error) {
+	var result []*models.GradeDistribution = make([]*models.GradeDistribution, 0)
 	page := ctx.page
 
 	script, err := readScriptFile()
@@ -246,14 +247,14 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]models.GradeDistribution, e
 			bar.Finish()
 			return nil, err
 		}
-		result = append(result, gd)
+		result = append(result, &gd)
 		bar.Increment()
 	}
 	bar.Finish()
 	return result, nil
 }
 
-func ScrapingGradeDistribution(year int, semester int, faclutyID string, faclutyName string) ([]models.GradeDistribution, error) {
+func ScrapingGradeDistribution(year int, semester int, faclutyID string, faclutyName string) ([]*models.GradeDistribution, error) {
 	ctx := &ScrapingContext{
 		year:        year,
 		semester:    semester,

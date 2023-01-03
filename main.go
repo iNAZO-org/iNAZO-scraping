@@ -7,7 +7,6 @@ import (
 	flags "github.com/jessevdk/go-flags"
 
 	"karintou8710/iNAZO-scraping/database"
-	"karintou8710/iNAZO-scraping/models"
 	"karintou8710/iNAZO-scraping/setting"
 )
 
@@ -15,7 +14,7 @@ var parser = flags.NewParser(&struct{}{}, flags.Default)
 
 func main() {
 	setting.Init()
-	database.Init(&models.GradeDistribution{})
+	database.Init()
 
 	_, err := parser.Parse()
 	if err != nil {

@@ -6,16 +6,23 @@ import (
 	"path/filepath"
 
 	"karintou8710/iNAZO-scraping/csv"
+	"karintou8710/iNAZO-scraping/database"
 	"karintou8710/iNAZO-scraping/models"
 )
 
-func existGradeDistributionRow(gd models.GradeDistribution) (bool, error) {
-	var cnt int
-	existFlag := cnt > 0
-	return existFlag, nil
+func existGradeDistributionRow(gd *models.GradeDistribution) (bool, error) {
+	var exists bool
+	db := database.GetDB()
+	err := db.Model(gd).
+		Select("count(*) > 0").
+		Where(gd).
+		Find(&exists).
+		Error
+	return exists, err
 }
 
-func insertGradeDistributionList(gdList []models.GradeDistribution) error {
+func insertGradeDistributionList(gdList []*models.GradeDistribution) error {
+	db := database.GetDB()
 	for _, gd := range gdList {
 		existFlag, err := existGradeDistributionRow(gd)
 		if err != nil {
@@ -25,6 +32,8 @@ func insertGradeDistributionList(gdList []models.GradeDistribution) error {
 		if existFlag {
 			continue
 		}
+
+		db.Create(&gd)
 	}
 
 	return nil

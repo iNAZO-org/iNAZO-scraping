@@ -3,10 +3,11 @@ package csv
 import (
 	"encoding/csv"
 	"fmt"
-	"karintou8710/iNAZO-scraping/models"
 	"os"
 	"path"
 	"strconv"
+
+	"karintou8710/iNAZO-scraping/models"
 )
 
 func deserializationGradeDistribution(row []string) (*models.GradeDistribution, error) {
@@ -96,8 +97,8 @@ func deserializationGradeDistribution(row []string) (*models.GradeDistribution, 
 	}, nil
 }
 
-func ReadGradeDistributionFromCSV(filePath string) ([]models.GradeDistribution, error) {
-	var result []models.GradeDistribution
+func ReadGradeDistributionFromCSV(filePath string) ([]*models.GradeDistribution, error) {
+	var result []*models.GradeDistribution
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -115,13 +116,13 @@ func ReadGradeDistributionFromCSV(filePath string) ([]models.GradeDistribution, 
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, *gd)
+		result = append(result, gd)
 	}
 
 	return result, nil
 }
 
-func WriteGradeDistributionToCSV(year, semester int, facultyName string, gd []models.GradeDistribution) error {
+func WriteGradeDistributionToCSV(year, semester int, facultyName string, gd []*models.GradeDistribution) error {
 	filePath := fmt.Sprintf("data/%d%d/%s.csv", year, semester, facultyName)
 	folderPath := path.Dir(filePath)
 	err := os.MkdirAll(folderPath, os.ModePerm)
