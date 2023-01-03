@@ -33,7 +33,7 @@ func insertGradeDistributionList(gdList []*models.GradeDistribution) error {
 			continue
 		}
 
-		db.Create(&gd)
+		return db.Create(&gd).Error
 	}
 
 	return nil
