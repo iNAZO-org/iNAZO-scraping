@@ -1,8 +1,10 @@
-package main
+package scraping
 
 import (
 	"fmt"
 	"io/ioutil"
+	"karintou8710/iNAZO-scraping/models"
+	"karintou8710/iNAZO-scraping/setting"
 	"math"
 	"os"
 	"strconv"
@@ -11,6 +13,20 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/sclevine/agouti"
 )
+
+type ScrapingContext struct {
+	driver      *agouti.WebDriver
+	page        *agouti.Page
+	year        int
+	semester    int
+	facultyID   string
+	facultyName string
+}
+
+type SelectItem struct {
+	id    string
+	value string
+}
 
 func readScriptFile() (string, error) {
 	file, err := os.Open("script.js")
@@ -27,7 +43,7 @@ func readScriptFile() (string, error) {
 	return string(script), nil
 }
 
-func validateGradeDistribution(gd *GradeDistribution) error {
+func validateGradeDistribution(gd *models.GradeDistribution) error {
 	sumStudentNumber := (gd.ApCount + gd.ACount + gd.AmCount +
 		gd.BpCount + gd.BCount + gd.BmCount +
 		gd.CpCount + gd.CCount +
@@ -43,7 +59,7 @@ func validateGradeDistribution(gd *GradeDistribution) error {
 func searchGradeDistribution(ctx *ScrapingContext) error {
 	// 検索画面へ移動
 	page := ctx.page
-	page.Navigate(searchUrl)
+	page.Navigate(setting.SearchUrl)
 
 	// 検索条件の入力
 	selectItems := []SelectItem{
@@ -84,8 +100,8 @@ func viewAllGradeDistribution(ctx *ScrapingContext) error {
 	return nil
 }
 
-func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
-	var result []GradeDistribution = make([]GradeDistribution, 0)
+func fetchGradeDistribution(ctx *ScrapingContext) ([]models.GradeDistribution, error) {
+	var result []models.GradeDistribution = make([]models.GradeDistribution, 0)
 	page := ctx.page
 
 	script, err := readScriptFile()
@@ -203,7 +219,7 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
 			return nil, err
 		}
 
-		gd := GradeDistribution{
+		gd := models.GradeDistribution{
 			Subject:      rowItem[0],
 			SubTitle:     rowItem[1],
 			Class:        rowItem[2],
@@ -237,7 +253,13 @@ func fetchGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
 	return result, nil
 }
 
-func scrapingGradeDistribution(ctx *ScrapingContext) ([]GradeDistribution, error) {
+func ScrapingGradeDistribution(year int, semester int, faclutyID string, faclutyName string) ([]models.GradeDistribution, error) {
+	ctx := &ScrapingContext{
+		year:        year,
+		semester:    semester,
+		facultyID:   faclutyID,
+		facultyName: faclutyName,
+	}
 	options := agouti.ChromeOptions(
 		"args", []string{
 			"--headless",

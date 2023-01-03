@@ -1,14 +1,15 @@
-package main
+package csv
 
 import (
 	"encoding/csv"
 	"fmt"
+	"karintou8710/iNAZO-scraping/models"
 	"os"
 	"path"
 	"strconv"
 )
 
-func deserializationGradeDistribution(row []string) (*GradeDistribution, error) {
+func deserializationGradeDistribution(row []string) (*models.GradeDistribution, error) {
 	year, err := strconv.Atoi(row[4])
 	if err != nil {
 		return nil, err
@@ -70,7 +71,7 @@ func deserializationGradeDistribution(row []string) (*GradeDistribution, error) 
 		return nil, err
 	}
 
-	return &GradeDistribution{
+	return &models.GradeDistribution{
 		Subject:      row[0],
 		SubTitle:     row[1],
 		Class:        row[2],
@@ -95,8 +96,8 @@ func deserializationGradeDistribution(row []string) (*GradeDistribution, error) 
 	}, nil
 }
 
-func readGradeDistributionFromCSV(filePath string) ([]GradeDistribution, error) {
-	var result []GradeDistribution
+func ReadGradeDistributionFromCSV(filePath string) ([]models.GradeDistribution, error) {
+	var result []models.GradeDistribution
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -120,8 +121,8 @@ func readGradeDistributionFromCSV(filePath string) ([]GradeDistribution, error) 
 	return result, nil
 }
 
-func writeGradeDistributionToCSV(ctx *ScrapingContext, gd []GradeDistribution) error {
-	filePath := fmt.Sprintf("data/%d%d/%s.csv", ctx.year, ctx.semester, ctx.facultyName)
+func WriteGradeDistributionToCSV(year, semester int, facultyName string, gd []models.GradeDistribution) error {
+	filePath := fmt.Sprintf("data/%d%d/%s.csv", year, semester, facultyName)
 	folderPath := path.Dir(filePath)
 	err := os.MkdirAll(folderPath, os.ModePerm)
 	if err != nil {

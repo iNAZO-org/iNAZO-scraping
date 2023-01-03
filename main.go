@@ -5,33 +5,19 @@ import (
 	"os"
 
 	flags "github.com/jessevdk/go-flags"
-	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+
+	"karintou8710/iNAZO-scraping/database"
+	"karintou8710/iNAZO-scraping/models"
+	"karintou8710/iNAZO-scraping/setting"
 )
 
 var parser = flags.NewParser(&struct{}{}, flags.Default)
-var db *gorm.DB
-
-func init() {
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
-	}
-}
 
 func main() {
-	connStr := os.Getenv("DB_URL")
-	var err error
-	db, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		return
-	}
+	setting.Init()
+	database.Init(&models.GradeDistribution{})
 
-	_, err = parser.Parse()
+	_, err := parser.Parse()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		return

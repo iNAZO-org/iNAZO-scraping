@@ -1,6 +1,6 @@
-package main
+package utils
 
-func getKeysFromMap[T comparable, U comparable](m map[T]U) []T {
+func GetKeysFromMap[T comparable, U comparable](m map[T]U) []T {
 	var result []T
 	for key, _ := range m {
 		result = append(result, key)

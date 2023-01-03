@@ -1,11 +1,11 @@
-package main
+package setting
 
 const (
-	searchUrl = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx"
-	resultUrl = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistResult11.aspx"
+	SearchUrl = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistSerch.aspx"
+	ResultUrl = "https://educate.academic.hokudai.ac.jp/seiseki/GradeDistResult11.aspx"
 )
 
-var facultyIdToName = map[string]string{
+var FacultyIdToName = map[string]string{
 	"00": "全学教育",
 	"02": "総合教育部",
 	"05": "文学部",
