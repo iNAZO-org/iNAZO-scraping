@@ -1,4 +1,4 @@
-module example.com/hello
+module karintou8710/iNAZO-scraping
 
 go 1.19
 
